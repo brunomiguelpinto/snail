@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snail — Área de Membros</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700;1,900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0c;
+      --surface: #111115;
+      --surface2: #18181f;
+      --accent: #ff6b35;
+      --text: #f0f0f0;
+      --muted: #6b6b7a;
+      --border: #1e1e28;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* BLOBS */
+    .blob { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+    .blob-1 { width: 400px; height: 400px; background: rgba(255,107,53,0.07); top: -100px; right: -100px; }
+    .blob-2 { width: 300px; height: 300px; background: rgba(255,107,53,0.05); bottom: 50px; left: -100px; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 40px;
+      background: rgba(10,10,12,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.4rem; letter-spacing: -0.02em; }
+    .logo span { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .member-badge {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.2);
+      padding: 6px 14px; border-radius: 100px;
+    }
+    .btn-logout {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      padding: 8px 16px; border-radius: 8px; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* AUTH SCREEN */
+    #auth-screen {
+      position: relative; z-index: 1;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px 40px;
+      width: 100%; max-width: 420px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .auth-logo { font-family: 'Fraunces', serif; font-weight: 900; font-size: 2rem; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .auth-logo span { color: var(--accent); }
+    .auth-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 36px; line-height: 1.6; }
+
+    .tabs { display: flex; gap: 4px; background: var(--surface2); padding: 4px; border-radius: 10px; margin-bottom: 28px; }
+    .tab {
+      flex: 1; padding: 10px; border: none; border-radius: 8px; background: none;
+      color: var(--muted); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem;
+      font-weight: 500; cursor: pointer; transition: all 0.2s;
+    }
+    .tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; font-weight: 500; letter-spacing: 0.03em; }
+    .form-group input {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.92rem; color: var(--text); outline: none; transition: border-color 0.2s;
+    }
+    .form-group input::placeholder { color: var(--muted); }
+    .form-group input:focus { border-color: rgba(255,107,53,0.4); }
+
+    .btn-primary {
+      width: 100%; background: var(--accent); color: #0a0a0c; border: none;
+      border-radius: 10px; padding: 15px; font-family: 'Fraunces', serif;
+      font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 8px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,107,53,0.25); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .auth-error {
+      background: rgba(255,80,80,0.08); border: 1px solid rgba(255,80,80,0.2);
+      border-radius: 8px; padding: 12px 16px; color: #ff8080; font-size: 0.85rem;
+      margin-top: 12px; display: none;
+    }
+    .auth-success {
+      background: rgba(255,107,53,0.08); border: 1px solid rgba(255,107,53,0.2);
+      border-radius: 8px; padding: 12px 16px; color: var(--accent); font-size: 0.85rem;
+      margin-top: 12px; display: none;
+    }
+
+    /* MEMBERS SCREEN */
+    #members-screen { display: none; position: relative; z-index: 1; padding: 100px 24px 60px; max-width: 1100px; margin: 0 auto; }
+
+    .welcome { margin-bottom: 48px; animation: fadeUp 0.6s ease both; }
+    .welcome h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.03em; margin-bottom: 8px; }
+    .welcome h1 em { font-style: italic; color: var(--accent); }
+    .welcome p { color: var(--muted); font-size: 0.95rem; }
+
+    .section-label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 20px;
+    }
+
+    .coupons-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-bottom: 60px; }
+
+    .coupon-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+      padding: 28px; transition: border-color 0.2s, transform 0.2s; position: relative; overflow: hidden;
+    }
+    .coupon-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,107,53,0.3), transparent);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .coupon-card:hover { border-color: rgba(255,107,53,0.2); transform: translateY(-3px); }
+    .coupon-card:hover::before { opacity: 1; }
+
+    .coupon-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .coupon-brand { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.1rem; letter-spacing: -0.02em; }
+    .coupon-discount {
+      background: rgba(255,107,53,0.12); border: 1px solid rgba(255,107,53,0.25);
+      color: var(--accent); font-weight: 700; font-size: 0.85rem; padding: 4px 12px; border-radius: 100px;
+    }
+    .coupon-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.6; margin-bottom: 20px; }
+    .coupon-category {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px;
+    }
+    .btn-coupon {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+      border-radius: 10px; padding: 12px; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none;
+      display: block; text-align: center;
+    }
+    .btn-coupon:hover { background: var(--accent); color: #0a0a0c; border-color: var(--accent); }
+
+    /* COMING SOON CARD */
+    .coupon-card.coming-soon { opacity: 0.5; }
+    .coupon-card.coming-soon .btn-coupon { cursor: not-allowed; }
+    .coming-badge {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); border: 1px solid var(--border); padding: 4px 10px; border-radius: 100px;
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .auth-card { padding: 32px 24px; }
+      #members-screen { padding: 90px 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">snail<span>.</span></div>
+    <div class="nav-right">
+      <div class="member-badge" id="member-badge">Membro</div>
+      <button class="btn-logout" id="btn-logout" onclick="handleLogout()">Sair</button>
+    </div>
+  </nav>
+
+  <!-- AUTH SCREEN -->
+  <div id="auth-screen" style="display:none">
+    <div class="auth-card">
+      <div class="auth-logo">snail<span>.</span></div>
+      <p class="auth-sub">A tua área exclusiva de cupões e descontos das melhores marcas.</p>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('login')">Entrar</button>
+        <button class="tab" onclick="switchTab('register')">Registar</button>
+      </div>
+
+      <div id="login-form">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="o.teu@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" />
+        </div>
+        <button class="btn-primary" onclick="handleLogin()" id="btn-login">Entrar →</button>
+      </div>
+
+      <div id="register-form" style="display:none">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="o.teu@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <button class="btn-primary" onclick="handleRegister()" id="btn-register">Criar conta →</button>
+      </div>
+
+      <div class="auth-error" id="auth-error"></div>
+      <div class="auth-success" id="auth-success"></div>
+    </div>
+  </div>
+
+  <!-- MEMBERS SCREEN -->
+  <div id="members-screen" style="display:block">
+    <div class="welcome">
+      <h1>Bem-vindo à<br/><em>tua área</em> exclusiva.</h1>
+      <p>Cupões seleccionados a pensar em ti. Novidades todas as semanas.</p>
+    </div>
+
+    <p class="section-label">Cupões disponíveis</p>
+    <div class="coupons-grid">
+
+      <div class="coupon-card">
+        <div class="coupon-header">
+          <div class="coupon-brand">Prozis</div>
+          <div class="coupon-discount">10% OFF</div>
+        </div>
+        <div class="coupon-category">💊 Fitness & Nutrição</div>
+        <p class="coupon-desc">Desconto exclusivo Snail em suplementos, proteínas e equipamento desportivo.</p>
+        <a class="btn-coupon" href="https://www.prozis.com" target="_blank">Usar desconto →</a>
+      </div>
+
+      <div class="coupon-card">
+        <div class="coupon-header">
+          <div class="coupon-brand">Padel Nuestro</div>
+          <div class="coupon-discount">5% OFF</div>
+        </div>
+        <div class="coupon-category">🎾 Desporto</div>
+        <p class="coupon-desc">Material de padel das melhores marcas — Bullpadel, Adidas, Head, Nox e mais.</p>
+        <a class="btn-coupon" href="https://www.padelnuestro.com" target="_blank">Usar desconto →</a>
+      </div>
+
+      <div class="coupon-card">
+        <div class="coupon-header">
+          <div class="coupon-brand">Booking.com</div>
+          <div class="coupon-discount">Cashback</div>
+        </div>
+        <div class="coupon-category">✈️ Viagens</div>
+        <p class="coupon-desc">Reserva o teu próximo hotel ou apartamento e recebe cashback exclusivo.</p>
+        <a class="btn-coupon" href="https://www.booking.com" target="_blank">Usar desconto →</a>
+      </div>
+
+      <div class="coupon-card coming-soon">
+        <div class="coupon-header">
+          <div class="coupon-brand">Honorato</div>
+          <div class="coming-badge">Em breve</div>
+        </div>
+        <div class="coupon-category">🍔 Restauração</div>
+        <p class="coupon-desc">Desconto exclusivo nos hambúrgueres premium portugueses. A chegar em breve.</p>
+        <button class="btn-coupon" disabled>Disponível em breve</button>
+      </div>
+
+      <div class="coupon-card coming-soon">
+        <div class="coupon-header">
+          <div class="coupon-brand">Josefinas</div>
+          <div class="coming-badge">Em breve</div>
+        </div>
+        <div class="coupon-category">👟 Moda</div>
+        <p class="coupon-desc">Sapatos premium portugueses para mulher. Parceria a ser finalizada.</p>
+        <button class="btn-coupon" disabled>Disponível em breve</button>
+      </div>
+
+      <div class="coupon-card coming-soon">
+        <div class="coupon-header">
+          <div class="coupon-brand">Decathlon</div>
+          <div class="coming-badge">Em breve</div>
+        </div>
+        <div class="coupon-category">⚽ Desporto</div>
+        <p class="coupon-desc">Desconto em toda a gama de material desportivo. A chegar brevemente.</p>
+        <button class="btn-coupon" disabled>Disponível em breve</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ Substitui pelos teus valores do Supabase
+    const SUPABASE_URL = 'https://SEU-PROJETO.supabase.co';
+    const SUPABASE_ANON_KEY = 'SUA-ANON-KEY';
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+      clearMessages();
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('auth-error');
+      el.textContent = msg; el.style.display = 'block';
+      document.getElementById('auth-success').style.display = 'none';
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('auth-success');
+      el.textContent = msg; el.style.display = 'block';
+      document.getElementById('auth-error').style.display = 'none';
+    }
+
+    function clearMessages() {
+      document.getElementById('auth-error').style.display = 'none';
+      document.getElementById('auth-success').style.display = 'none';
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-login');
+
+      if (!email || !password) return showError('Preenche todos os campos.');
+
+      btn.textContent = 'A entrar...'; btn.disabled = true;
+
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        showError('Email ou password incorrectos.');
+        btn.textContent = 'Entrar →'; btn.disabled = false;
+      }
+    }
+
+    async function handleRegister() {
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const btn = document.getElementById('btn-register');
+
+      if (!email || !password) return showError('Preenche todos os campos.');
+      if (password.length < 6) return showError('A password deve ter pelo menos 6 caracteres.');
+
+      btn.textContent = 'A criar conta...'; btn.disabled = true;
+
+      const { error } = await sb.auth.signUp({ email, password });
+
+      if (error) {
+        showError('Erro ao criar conta. Tenta novamente.');
+        btn.textContent = 'Criar conta →'; btn.disabled = false;
+      } else {
+        showSuccess('✓ Conta criada! Verifica o teu email para confirmar.');
+        btn.textContent = 'Criar conta →'; btn.disabled = false;
+      }
+    }
+
+    async function handleLogout() {
+      await sb.auth.signOut();
+    }
+
+    function showMembers(user) {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('members-screen').style.display = 'block';
+      document.getElementById('member-badge').style.display = 'flex';
+      document.getElementById('btn-logout').style.display = 'flex';
+    }
+
+    function showAuth() {
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('members-screen').style.display = 'none';
+      document.getElementById('member-badge').style.display = 'none';
+      document.getElementById('btn-logout').style.display = 'none';
+    }
+
+    // Listen for auth state changes
+    sb.auth.onAuthStateChange((event, session) => {
+      if (session) showMembers(session.user);
+      else showAuth();
+    });
+
+    // Enter key support
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const loginVisible = document.getElementById('login-form').style.display !== 'none';
+        if (loginVisible) handleLogin();
+        else handleRegister();
+      }
+    });
+  </script>
+</body>
+</html>

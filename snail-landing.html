@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snail — Descontos que realmente valem</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0c;
+      --surface: #111115;
+      --surface2: #18181f;
+      --accent: #ff6b35;
+      --accent2: #ffb347;
+      --text: #f0f0f0;
+      --muted: #6b6b7a;
+      --border: #1e1e28;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.35;
+    }
+
+    /* GLOW blobs */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: rgba(255,107,53,0.08);
+      top: -150px; right: -100px;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: rgba(255,179,71,0.06);
+      bottom: 100px; left: -150px;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      background: rgba(10,10,12,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Fraunces', serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .logo span {
+      color: var(--accent);
+    }
+
+    .nav-badge {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 100px;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(255,107,53,0.08);
+      border: 1px solid rgba(255,107,53,0.2);
+      padding: 7px 16px;
+      border-radius: 100px;
+      margin-bottom: 36px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s 0.1s ease both;
+      max-width: 820px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+      position: relative;
+    }
+
+    h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 0; right: 0;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      opacity: 0.4;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--muted);
+      font-weight: 300;
+      max-width: 480px;
+      margin-bottom: 52px;
+      animation: fadeUp 0.8s 0.2s ease both;
+      line-height: 1.7;
+    }
+
+    /* FORM */
+    .waitlist-form {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 460px;
+      animation: fadeUp 0.8s 0.3s ease both;
+      position: relative;
+    }
+
+    .waitlist-form input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .waitlist-form input::placeholder { color: var(--muted); }
+    .waitlist-form input:focus {
+      border-color: rgba(255,107,53,0.4);
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.06);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0a0c;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 24px;
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      letter-spacing: -0.01em;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255,107,53,0.25);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .success-msg {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,107,53,0.08);
+      border: 1px solid rgba(255,107,53,0.25);
+      border-radius: 12px;
+      padding: 16px 24px;
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.95rem;
+      width: 100%;
+      max-width: 460px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .hero-note {
+      margin-top: 18px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+
+    /* SOCIAL PROOF */
+    .social-proof {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 60px;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    .avatars {
+      display: flex;
+    }
+    .avatars span {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      margin-left: -8px;
+      font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface2);
+      color: var(--muted);
+    }
+    .avatars span:first-child { margin-left: 0; }
+
+    .social-text {
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+    .social-text strong { color: var(--text); font-weight: 500; }
+
+    /* FEATURES */
+    .features {
+      position: relative;
+      z-index: 1;
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Fraunces', serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 60px;
+      max-width: 500px;
+    }
+
+    .section-title span { color: var(--accent); }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,107,53,0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(255,107,53,0.15);
+      transform: translateY(-3px);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .card h3 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* HOW IT WORKS */
+    .how {
+      position: relative;
+      z-index: 1;
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 28px; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), var(--border), transparent);
+    }
+
+    .step {
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    .step-num {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-weight: 900;
+      font-size: 1.8rem;
+      color: var(--accent);
+      margin: 0 auto 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step h4 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* PRICING TEASER */
+    .pricing {
+      position: relative;
+      z-index: 1;
+      padding: 80px 24px 100px;
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .price-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,107,53,0.2);
+      border-radius: 24px;
+      padding: 52px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-card::after {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: rgba(255,107,53,0.05);
+      border-radius: 50%;
+      filter: blur(40px);
+    }
+
+    .price-tag {
+      font-family: 'Fraunces', serif;
+      font-weight: 800;
+      font-size: 4.5rem;
+      letter-spacing: -0.05em;
+      color: var(--accent);
+      line-height: 1;
+      margin: 16px 0 8px;
+    }
+    .price-tag sup {
+      font-size: 1.8rem;
+      vertical-align: super;
+    }
+    .price-tag sub {
+      font-size: 1rem;
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .price-desc {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .perks-list {
+      list-style: none;
+      text-align: left;
+      margin-bottom: 36px;
+    }
+
+    .perks-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .perks-list li:last-child { border-bottom: none; }
+    .perks-list li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    footer .logo { font-size: 1rem; display: inline-block; margin-bottom: 12px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .waitlist-form { flex-direction: column; }
+      .steps::before { display: none; }
+      .step { margin-bottom: 40px; }
+      .price-card { padding: 36px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">snail<span>.</span></div>
+    <div class="nav-badge">Em breve</div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <img src="data:image/png;base64,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" alt="Snail" style="width:90px; height:90px; object-fit:contain; margin-bottom:24px; animation: fadeUp 0.6s ease both;"/>
+    <div class="eyebrow">Waitlist aberta</div>
+
+    <h1>Descontos que<br/><em>realmente</em> valem.</h1>
+
+    <p class="hero-sub">
+      Junta-te à waitlist e sê dos primeiros a aceder a cupões exclusivos das melhores marcas. Acesso antecipado, sem custos.
+    </p>
+
+    <div class="waitlist-form" id="form-wrapper">
+      <input type="email" id="email-input" placeholder="O teu e-mail" autocomplete="email" />
+      <button class="btn-primary" onclick="handleSubmit()">Entrar na lista</button>
+    </div>
+
+    <div class="success-msg" id="success-msg">
+      ✓ &nbsp;Estás dentro! Vamos avisar-te quando abrirmos.
+    </div>
+
+    <p class="hero-note">Sem spam. Podes sair quando quiseres.</p>
+
+
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <p class="section-label">Porquê o Snail</p>
+    <h2 class="section-title">Menos barulho,<br/><span>mais poupança.</span></h2>
+
+    <div class="cards-grid">
+      <div class="card">
+        <span class="card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+            <rect x="9" y="3" width="6" height="4" rx="1"/>
+            <path d="M9 12h6M9 16h4"/>
+          </svg>
+        </span>
+        <h3>Descontos curados</h3>
+        <p>Só as marcas que usas mesmo. Nada de cupões de 2% em lojas que nunca ouviste falar.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </span>
+        <h3>Actualizados regularmente</h3>
+        <p>Novos cupões todas as semanas. Sem datas expiradas, sem links partidos.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </span>
+        <h3>Acesso exclusivo</h3>
+        <p>Descontos negociados directamente com as marcas, disponíveis só para membros Snail.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <p class="section-label">Como funciona</p>
+    <h2 class="section-title" style="text-align:center; max-width:100%; margin-bottom:70px;">
+      Três passos.<br/><span>É tudo.</span>
+    </h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Junta-te</h4>
+        <p>Deixa o teu e-mail e reservas o teu lugar. Sem cartão, sem compromisso.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Explora</h4>
+        <p>Navega pelos cupões disponíveis das marcas parceiras.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Poupa</h4>
+        <p>Poupas dinheiro nas marcas que já usas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EARLY ACCESS -->
+  <section class="pricing">
+    <div class="price-card">
+      <p class="section-label">Acesso antecipado</p>
+      <div class="price-tag" style="font-size:3.5rem; letter-spacing:-0.03em;">Acesso antecipado<br/><span style="font-size:1rem; color:var(--muted); font-family:'Plus Jakarta Sans',sans-serif; font-weight:400; letter-spacing:0;">sem custos para quem se inscrever agora</span></div>
+      <p class="price-desc" style="margin-top:20px;">
+        Entra na waitlist hoje e tens acesso completo ao Snail sem custos.<br/>
+        Quando lançarmos, os membros fundadores ficam com acesso antecipado — sem compromisso.
+      </p>
+      <ul class="perks-list">
+        <li>Acesso a todos os cupões desde o primeiro dia</li>
+        <li>Sem cartão de crédito, sem surpresas</li>
+        <li>Membro fundador — estatuto permanente</li>
+        <li>Voz activa na escolha dos parceiros</li>
+      </ul>
+      <button class="btn-primary" style="width:100%; padding:18px; font-size:1rem;" onclick="document.getElementById('email-input').focus(); window.scrollTo({top:0,behavior:'smooth'})">
+        Quero o meu acesso gratuito →
+      </button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="logo">snail<span style="color:var(--accent)">.</span></div>
+    <p>© 2026 Snail · Todos os direitos reservados</p>
+    <p style="margin-top:10px;"><a href="mailto:snailteamhq@gmail.com" style="color:var(--muted); text-decoration:none;">snailteamhq@gmail.com</a></p>
+  </footer>
+
+  <script>
+    async function handleSubmit() {
+      const input = document.getElementById('email-input');
+      const form = document.getElementById('form-wrapper');
+      const success = document.getElementById('success-msg');
+      const btn = form.querySelector('button');
+      const email = input.value.trim();
+
+      if (!email || !email.includes('@')) {
+        input.style.borderColor = 'rgba(255,107,53,0.6)';
+        input.focus();
+        setTimeout(() => input.style.borderColor = '', 1500);
+        return;
+      }
+
+      btn.textContent = 'A guardar...';
+      btn.disabled = true;
+
+
+    document.getElementById('email-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleSubmit();
+    });
+
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card, .step, .price-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
