@@ -1,0 +1,93 @@
+<% content_for :title, "Snail — Demo Membros" %>
+<% content_for :nav_right do %>
+  <span class="member-badge">Demo</span>
+  <%= link_to "Sair", root_path, class: "btn-logout" %>
+<% end %>
+
+<div class="members-screen">
+  <div class="welcome">
+    <h1>Olá, bem-vinda à tua<br/><em>área exclusiva.</em></h1>
+    <p>Cupões seleccionados a pensar em ti. Novidades todas as semanas.</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num">6</div>
+      <div class="stat-label">Cupões disponíveis</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Marcas activas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">A chegar em breve</div>
+    </div>
+  </div>
+
+  <p class="section-label">Cupões activos</p>
+  <div class="coupons-grid">
+    <div class="coupon-card">
+      <div class="coupon-header">
+        <div class="coupon-brand">Prozis</div>
+        <div class="coupon-discount">10% OFF</div>
+      </div>
+      <div class="coupon-category">Fitness & Nutrição</div>
+      <p class="coupon-desc">Desconto exclusivo Snail em suplementos, proteínas e equipamento desportivo.</p>
+      <%= link_to "Usar desconto →", "https://www.prozis.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
+    </div>
+
+    <div class="coupon-card">
+      <div class="coupon-header">
+        <div class="coupon-brand">Padel Nuestro</div>
+        <div class="coupon-discount">5% OFF</div>
+      </div>
+      <div class="coupon-category">Desporto</div>
+      <p class="coupon-desc">Material de padel das melhores marcas — Bullpadel, Adidas, Head e Nox.</p>
+      <%= link_to "Usar desconto →", "https://www.padelnuestro.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
+    </div>
+
+    <div class="coupon-card">
+      <div class="coupon-header">
+        <div class="coupon-brand">Booking.com</div>
+        <div class="coupon-discount">Cashback</div>
+      </div>
+      <div class="coupon-category">Viagens</div>
+      <p class="coupon-desc">Reserva o teu próximo hotel ou apartamento e recebe cashback exclusivo.</p>
+      <%= link_to "Usar desconto →", "https://www.booking.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
+    </div>
+  </div>
+
+  <p class="section-label">Em breve</p>
+  <div class="coupons-grid">
+    <div class="coupon-card coming-soon">
+      <div class="coupon-header">
+        <div class="coupon-brand">Honorato</div>
+        <div class="coming-badge">Em breve</div>
+      </div>
+      <div class="coupon-category">Restauração</div>
+      <p class="coupon-desc">Desconto exclusivo nos hambúrgueres premium portugueses. Parceria a ser finalizada.</p>
+      <button class="btn-coupon" disabled>Disponível em breve</button>
+    </div>
+
+    <div class="coupon-card coming-soon">
+      <div class="coupon-header">
+        <div class="coupon-brand">Josefinas</div>
+        <div class="coming-badge">Em breve</div>
+      </div>
+      <div class="coupon-category">Moda</div>
+      <p class="coupon-desc">Sapatos premium portugueses para mulher. Parceria a ser finalizada.</p>
+      <button class="btn-coupon" disabled>Disponível em breve</button>
+    </div>
+
+    <div class="coupon-card coming-soon">
+      <div class="coupon-header">
+        <div class="coupon-brand">Decathlon</div>
+        <div class="coming-badge">Em breve</div>
+      </div>
+      <div class="coupon-category">Desporto</div>
+      <p class="coupon-desc">Desconto em toda a gama de material desportivo. A chegar brevemente.</p>
+      <button class="btn-coupon" disabled>Disponível em breve</button>
+    </div>
+  </div>
+</div>

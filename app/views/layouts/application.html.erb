@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <title><%= content_for(:title) || "Snail — Descontos que realmente valem" %></title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Snail">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= yield :head %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <% unless content_for?(:hide_nav) %>
+      <nav class="snail-nav">
+        <%= link_to root_path, class: "logo" do %>snail<span>.</span><% end %>
+        <div class="nav-right">
+          <% if content_for?(:nav_right) %>
+            <%= yield :nav_right %>
+          <% elsif authenticated? %>
+            <span class="member-badge" title="<%= Current.user&.email_address %>"><%= Current.user&.email_address %></span>
+            <%= button_to "Sair", session_path, method: :delete, class: "btn-logout", form: { style: "display:inline" } %>
+          <% else %>
+            <%= link_to "Login", new_session_path, class: "btn-primary btn-nav-login" %>
+          <% end %>
+        </div>
+      </nav>
+    <% end %>
+
+    <% if flash[:alert].present? %>
+      <div class="auth-error" style="position:fixed; top:80px; left:50%; transform:translateX(-50%); z-index:200; max-width: 460px;">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+    <% if flash[:notice].present? %>
+      <div class="auth-success" style="position:fixed; top:80px; left:50%; transform:translateX(-50%); z-index:200; max-width: 460px;">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+
+    <main>
+      <%= yield %>
+    </main>
+
+    <% unless content_for?(:hide_footer) %>
+      <footer class="snail-footer">
+        <%= link_to root_path, class: "logo" do %>snail<span>.</span><% end %>
+        <p>© 2026 Snail · Todos os direitos reservados</p>
+        <p style="margin-top:10px;"><%= mail_to "snailteamhq@gmail.com" %></p>
+      </footer>
+    <% end %>
+  </body>
+</html>

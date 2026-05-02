@@ -1,0 +1,97 @@
+<% content_for :title, "Snail — Descontos que realmente valem" %>
+
+<section class="hero">
+  <%= image_tag "/snail-mark.png", alt: "Snail", class: "hero-logo" %>
+  <div class="eyebrow">Inscreve-te já</div>
+
+  <h1>Descontos que<br/><em>realmente</em> valem.</h1>
+
+  <p class="hero-sub">
+    Acede a cupões exclusivos das melhores marcas. Regista-te agora, sem custos.
+  </p>
+
+  <%= link_to "Criar conta →", signup_path, class: "btn-primary hero-cta" %>
+
+  <p class="hero-note">Já tens conta? <%= link_to "Login", new_session_path %></p>
+</section>
+
+<section class="features">
+  <p class="section-label">Porquê o Snail</p>
+  <h2 class="section-title">Menos barulho,<br/><span>mais poupança.</span></h2>
+
+  <div class="cards-grid">
+    <div class="card">
+      <span class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <path d="M9 12h6M9 16h4"/>
+        </svg>
+      </span>
+      <h3>Descontos curados</h3>
+      <p>Só as marcas que usas mesmo. Nada de cupões de 2% em lojas que nunca ouviste falar.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </span>
+      <h3>Actualizados regularmente</h3>
+      <p>Novos cupões todas as semanas. Sem datas expiradas, sem links partidos.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </span>
+      <h3>Acesso exclusivo</h3>
+      <p>Descontos negociados directamente com as marcas, disponíveis só para membros Snail.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <p class="section-label" style="text-align:center;">Como funciona</p>
+  <h2 class="section-title">Três passos.<br/><span>É tudo.</span></h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>Junta-te</h4>
+      <p>Cria a tua conta em segundos e acede já aos cupões exclusivos.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>Explora</h4>
+      <p>Navega pelos cupões disponíveis das marcas parceiras.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>Poupa</h4>
+      <p>Poupas dinheiro nas marcas que já usas.</p>
+    </div>
+  </div>
+</section>
+
+<section class="pricing">
+  <div class="price-card">
+    <p class="section-label">Inscreve-te já</p>
+    <div class="price-tag">
+      Sem custos
+      <span class="sub">sem cartão de crédito</span>
+    </div>
+    <p class="price-desc">
+      Cria a tua conta agora e acede imediatamente aos cupões exclusivos das melhores marcas.
+    </p>
+    <ul class="perks-list">
+      <li>Acesso a todos os cupões desde o primeiro dia</li>
+      <li>Sem cartão de crédito, sem surpresas</li>
+      <li>Membro fundador — estatuto permanente</li>
+      <li>Novos cupões todas as semanas</li>
+    </ul>
+    <%= link_to "Criar a minha conta →", signup_path, class: "btn-primary btn-block" %>
+  </div>
+</section>

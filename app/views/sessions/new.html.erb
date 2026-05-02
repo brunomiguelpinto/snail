@@ -1,0 +1,30 @@
+<% content_for :title, "Snail — Entrar" %>
+<% content_for :hide_footer, "1" %>
+
+<div class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">snail<span>.</span></div>
+    <p class="auth-sub">A tua área exclusiva de cupões e descontos das melhores marcas.</p>
+
+    <div class="auth-tabs">
+      <%= link_to "Entrar",  new_session_path,      class: "active" %>
+      <%= link_to "Registar", new_registration_path %>
+    </div>
+
+    <%= form_with url: session_path, local: true do |form| %>
+      <div class="form-group">
+        <%= form.label :email_address, "Email" %>
+        <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "o.teu@email.com", value: params[:email_address] %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label :password, "Password" %>
+        <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "••••••••", maxlength: 72 %>
+      </div>
+
+      <%= form.submit "Entrar →", class: "btn-primary btn-block" %>
+    <% end %>
+
+    <p class="auth-link"><%= link_to "Esqueceste-te da password?", new_password_path %></p>
+  </div>
+</div>
