@@ -2,88 +2,160 @@
 
 <div class="members-screen">
   <div class="welcome">
-    <h1>Olá, bem-vinda à tua<br/><em>área exclusiva.</em></h1>
+    <h1>Olá, bem-vindo à tua<br/><em>área exclusiva.</em></h1>
     <p>Cupões seleccionados a pensar em ti. Novidades todas as semanas.</p>
   </div>
 
-  <div class="stats-bar">
-    <div class="stat">
-      <div class="stat-num">6</div>
-      <div class="stat-label">Cupões disponíveis</div>
+  <div class="filters-block">
+    <div class="filters-row">
+      <span class="filter-label">Estado</span>
+      <button type="button" class="chip active" data-filter="all"      onclick="setStatus('all', this)">Todos</button>
+      <button type="button" class="chip"        data-filter="active"   onclick="setStatus('active', this)">Novo</button>
+      <button type="button" class="chip"        data-filter="expiring" onclick="setStatus('expiring', this)">A expirar</button>
     </div>
-    <div class="stat">
-      <div class="stat-num">3</div>
-      <div class="stat-label">Marcas activas</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">3</div>
-      <div class="stat-label">A chegar em breve</div>
-    </div>
-  </div>
-
-  <p class="section-label">Cupões activos</p>
-  <div class="coupons-grid">
-    <div class="coupon-card">
-      <div class="coupon-header">
-        <div class="coupon-brand">Prozis</div>
-        <div class="coupon-discount">10% OFF</div>
-      </div>
-      <div class="coupon-category">Fitness & Nutrição</div>
-      <p class="coupon-desc">Desconto exclusivo Snail em suplementos, proteínas e equipamento desportivo.</p>
-      <%= link_to "Usar desconto →", "https://www.prozis.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
-    </div>
-
-    <div class="coupon-card">
-      <div class="coupon-header">
-        <div class="coupon-brand">Padel Nuestro</div>
-        <div class="coupon-discount">5% OFF</div>
-      </div>
-      <div class="coupon-category">Desporto</div>
-      <p class="coupon-desc">Material de padel das melhores marcas — Bullpadel, Adidas, Head e Nox.</p>
-      <%= link_to "Usar desconto →", "https://www.padelnuestro.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
-    </div>
-
-    <div class="coupon-card">
-      <div class="coupon-header">
-        <div class="coupon-brand">Booking.com</div>
-        <div class="coupon-discount">Cashback</div>
-      </div>
-      <div class="coupon-category">Viagens</div>
-      <p class="coupon-desc">Reserva o teu próximo hotel ou apartamento e recebe cashback exclusivo.</p>
-      <%= link_to "Usar desconto →", "https://www.booking.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
+    <div class="filters-row">
+      <span class="filter-label">Categoria</span>
+      <select class="cat-select" id="cat-select" onchange="setCat(this.value)">
+        <option value="all">Todas as categorias</option>
+        <option value="fitness">Fitness & Nutrição</option>
+        <option value="desporto">Desporto</option>
+        <option value="viagens">Viagens</option>
+        <option value="moda">Moda</option>
+        <option value="restauracao">Restauração</option>
+      </select>
     </div>
   </div>
 
-  <p class="section-label">Em breve</p>
-  <div class="coupons-grid">
-    <div class="coupon-card coming-soon">
-      <div class="coupon-header">
-        <div class="coupon-brand">Honorato</div>
-        <div class="coming-badge">Em breve</div>
+  <div id="section-active">
+    <p class="section-label">Cupões activos</p>
+    <div class="members-coupons">
+      <div class="coupon-card" data-status="active" data-sub="new" data-cat="fitness">
+        <div class="coupon-header">
+          <div class="coupon-brand">Prozis</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="new-badge">Novo</span>
+            <span class="coupon-discount">10% OFF</span>
+          </div>
+        </div>
+        <div class="coupon-category">Fitness & Nutrição</div>
+        <p class="coupon-desc">Desconto exclusivo Snail em suplementos, proteínas e equipamento desportivo.</p>
+        <%= link_to "Usar desconto →", "https://www.prozis.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
       </div>
-      <div class="coupon-category">Restauração</div>
-      <p class="coupon-desc">Desconto exclusivo nos hambúrgueres premium portugueses. Parceria a ser finalizada.</p>
-      <button class="btn-coupon" disabled>Disponível em breve</button>
-    </div>
 
-    <div class="coupon-card coming-soon">
-      <div class="coupon-header">
-        <div class="coupon-brand">Josefinas</div>
-        <div class="coming-badge">Em breve</div>
+      <div class="coupon-card" data-status="active" data-sub="expiring" data-cat="desporto">
+        <div class="coupon-header">
+          <div class="coupon-brand">Padel Nuestro</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="expiring-badge">A expirar</span>
+            <span class="coupon-discount">5% OFF</span>
+          </div>
+        </div>
+        <div class="coupon-category">Desporto</div>
+        <p class="coupon-desc">Material de padel das melhores marcas — Bullpadel, Adidas, Head e Nox.</p>
+        <%= link_to "Usar desconto →", "https://www.padelnuestro.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
       </div>
-      <div class="coupon-category">Moda</div>
-      <p class="coupon-desc">Sapatos premium portugueses para mulher. Parceria a ser finalizada.</p>
-      <button class="btn-coupon" disabled>Disponível em breve</button>
-    </div>
 
-    <div class="coupon-card coming-soon">
-      <div class="coupon-header">
-        <div class="coupon-brand">Decathlon</div>
-        <div class="coming-badge">Em breve</div>
+      <div class="coupon-card" data-status="active" data-sub="normal" data-cat="viagens">
+        <div class="coupon-header">
+          <div class="coupon-brand">Booking.com</div>
+          <div class="coupon-discount">Cashback</div>
+        </div>
+        <div class="coupon-category">Viagens</div>
+        <p class="coupon-desc">Reserva o teu próximo hotel ou apartamento e recebe cashback exclusivo.</p>
+        <%= link_to "Usar desconto →", "https://www.booking.com", class: "btn-coupon", target: "_blank", rel: "noopener" %>
       </div>
-      <div class="coupon-category">Desporto</div>
-      <p class="coupon-desc">Desconto em toda a gama de material desportivo. A chegar brevemente.</p>
-      <button class="btn-coupon" disabled>Disponível em breve</button>
     </div>
+  </div>
+
+  <div id="section-soon">
+    <p class="section-label">Em breve</p>
+    <div class="members-coupons">
+      <div class="coupon-card coming-soon" data-status="soon" data-sub="normal" data-cat="restauracao">
+        <div class="coupon-header">
+          <div class="coupon-brand">Honorato</div>
+          <div class="coming-badge">Em breve</div>
+        </div>
+        <div class="coupon-category">Restauração</div>
+        <p class="coupon-desc">Desconto exclusivo nos hambúrgueres premium portugueses. Parceria a ser finalizada.</p>
+        <button type="button" class="btn-coupon" disabled>Disponível em breve</button>
+      </div>
+
+      <div class="coupon-card coming-soon" data-status="soon" data-sub="normal" data-cat="moda">
+        <div class="coupon-header">
+          <div class="coupon-brand">Josefinas</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="expiring-badge">A expirar</span>
+            <span class="coming-badge">Em breve</span>
+          </div>
+        </div>
+        <div class="coupon-category">Moda</div>
+        <p class="coupon-desc">Sapatos premium portugueses para mulher. Parceria a ser finalizada.</p>
+        <button type="button" class="btn-coupon" disabled>Disponível em breve</button>
+      </div>
+
+      <div class="coupon-card coming-soon" data-status="soon" data-sub="normal" data-cat="desporto">
+        <div class="coupon-header">
+          <div class="coupon-brand">Decathlon</div>
+          <div class="coming-badge">Em breve</div>
+        </div>
+        <div class="coupon-category">Desporto</div>
+        <p class="coupon-desc">Desconto em toda a gama de material desportivo. A chegar brevemente.</p>
+        <button type="button" class="btn-coupon" disabled>Disponível em breve</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="suggestion-block">
+    <div class="suggestion-title">Que marca queres ver<br/><em>aqui a seguir?</em></div>
+    <p class="suggestion-sub">Diz-nos e nós tratamos do resto.</p>
+    <div class="suggestion-row">
+      <input class="suggestion-input" id="suggest-input" type="text" placeholder="Ex: Zara, Nike, El Corte Inglés…" />
+      <button type="button" class="btn-suggest" onclick="submitSuggestion()">Sugerir →</button>
+    </div>
+    <div class="suggestion-ok" id="suggest-ok">✓ Recebido — obrigado!</div>
   </div>
 </div>
+
+<script>
+  (function() {
+    let currentStatus = 'all';
+    let currentCat    = 'all';
+
+    window.setStatus = function(status, btn) {
+      currentStatus = status;
+      document.querySelectorAll('[data-filter]').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    };
+
+    window.setCat = function(cat) {
+      currentCat = cat;
+      applyFilters();
+    };
+
+    function applyFilters() {
+      document.querySelectorAll('.coupon-card').forEach(card => {
+        let show = true;
+        if (currentStatus === 'active') {
+          show = card.dataset.sub === 'new';
+        } else if (currentStatus === 'expiring') {
+          show = card.dataset.sub === 'expiring';
+        }
+        if (currentCat !== 'all' && card.dataset.cat !== currentCat) show = false;
+        card.classList.toggle('hidden', !show);
+      });
+      const showActive = (currentStatus === 'all' || currentStatus === 'active' || currentStatus === 'expiring');
+      document.getElementById('section-active').style.display = showActive ? '' : 'none';
+      document.getElementById('section-soon').style.display   = (currentStatus === 'all') ? '' : 'none';
+    }
+
+    window.submitSuggestion = function() {
+      const input = document.getElementById('suggest-input');
+      if (!input.value.trim()) { input.focus(); return; }
+      input.value = '';
+      const ok = document.getElementById('suggest-ok');
+      ok.classList.add('visible');
+      setTimeout(() => ok.classList.remove('visible'), 3000);
+    };
+  })();
+</script>
